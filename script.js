@@ -7,27 +7,18 @@ import Triangle from "./triangle.js";
 import Vector from "vectory-lib";
 
 class Settings {
-  constructor(nrOfPoints) {
+  constructor(nrOfPoints, showCircles = true) {
     this.nrOfPoints = nrOfPoints;
+    this.showCircles = showCircles;
   }
 }
 
-const settings = new Settings(7);
-const gui = new dat.GUI();
-gui
-  .add(settings, 'nrOfPoints', 1, 20)
-  .name("Number of Points")
-  .step(1);
-gui
-  .add({ placePoints: placePoints }, 'placePoints')
-  .name("Place Points");
-gui
-  .add({ reset: startVisualization }, 'reset')
-  .name("Reset Visualization");
 
 let canvas;
 let ctx;
 let w, h;
+const gui = new dat.GUI({ width: 300 });
+let settings = new Settings(7);
 let generator = null;
 let currentState = null;
 let placedPoints = [];
@@ -107,6 +98,21 @@ function setup() {
   ctx = canvas.getContext("2d");
   window.addEventListener("resize", reset);
   canvas.addEventListener("click", advance);
+
+  gui
+    .add(settings, 'showCircles')
+    .name("Show Circumcircles");
+  gui
+    .add(settings, 'nrOfPoints', 1, 40)
+    .name("Number of Points")
+    .step(1);
+  gui
+    .add({ placePoints: placePoints }, 'placePoints')
+    .name("Place Points Your Self");
+  gui
+    .add({ reset: startVisualization }, 'reset')
+    .name("Reset Visualization (7 hard coded points)");
+
   reset();
 }
 
@@ -117,25 +123,16 @@ function reset() {
 }
 
 function startVisualization() {
-  // Vertexes off screen to give us some room to draw the points to triangulate
-  // but a lot of the edges showing on screen
-  let margin = 30;
-  let superTriangle = new Triangle(
-    new Vector(margin , h - margin),
-    new Vector(w - margin , h - margin),
-    new Vector(w / 2, margin)
-  );
+  let points = getPoints();
 
-  let pointList = getPoints();
-  generator = bowyerWatson(superTriangle, pointList);
-
-  // show the initial state
-  let result = generator.next();
-  currentState = result.value;
-  render();
+  start(points);
 }
 
 function startVisualizationWithPoints(points) {
+  start(points);
+}
+
+function start(points) {
   let margin = 30;
   let superTriangle = new Triangle(
     new Vector(margin, h - margin),
@@ -174,13 +171,15 @@ function render() {
   triangulation.forEach(t => {
     let isBad = badTriangles.includes(t);
 
-    // draw circumcircle
-    let cc = t.circumcenter;
-    let r = Math.sqrt(t.circumradiusSq);
-    ctx.beginPath();
-    ctx.arc(cc.x, cc.y, r, 0, Math.PI * 2);
-    ctx.strokeStyle = isBad ? "rgba(255, 0, 0, 0.8)" : "rgba(100, 100, 255, 0.8)";
-    ctx.stroke();
+    if(settings.showCircles) {
+      // draw circumcircle
+      let cc = t.circumcenter;
+      let r = Math.sqrt(t.circumradiusSq);
+      ctx.beginPath();
+      ctx.arc(cc.x, cc.y, r, 0, Math.PI * 2);
+      ctx.strokeStyle = isBad ? "rgba(255, 0, 0, 0.8)" : "rgba(100, 100, 255, 0.8)";
+      ctx.stroke();
+    }
 
     // draw triangle
     ctx.beginPath();
@@ -252,8 +251,8 @@ function drawStep(step) {
   // draw step info
   ctx.fillStyle = "#333";
   ctx.font = "14px monospace";
-  let label = step === 'init' ? "Initial state — click to advance"
-    : step === 'placePoints' ? "Place the points by clicking inside the triangle."
+  let label = step === 'placePoints' ? `Place the points by clicking inside the triangle. (${placedPoints.length}/${settings.nrOfPoints})`
+    : step === 'init' ? "Initial state — click to advance"
     : step === 'badTriangles' ? "Bad triangles (red) & polygon boundary (green) — click to advance"
     : step === 'retriangulated' ? "Re-triangulated — click to advance"
     : "Done! Click to restart";
