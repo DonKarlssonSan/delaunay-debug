@@ -10,17 +10,7 @@ let w, h;
 let generator = null;
 let currentState = null;
 
-
 function getPoints() {
-  // let pointList = [
-  //   new Vector(w*0.2, h*0.15),
-  //   new Vector(w*0.15, h*0.52),
-  //   new Vector(w*0.5, h*0.4),
-  //   new Vector(w*0.7, h*0.7),
-  //   new Vector(w*0.25, h*0.3),
-  //   new Vector(w*0.64, h*0.21),
-  //   new Vector(w*0.35, h*0.75)
-  // ];
   let pointList = [
     new Vector(w*0.53, h*0.26),
     new Vector(w*0.3, h*0.77),
@@ -30,7 +20,6 @@ function getPoints() {
     new Vector(w*0.75, h*0.75),
     new Vector(w*0.6, h*0.3),
   ];
-
 
   return pointList;
 }
@@ -91,7 +80,6 @@ function render() {
   // draw triangles
   triangulation.forEach(t => {
     let isBad = badTriangles.includes(t);
-    // ctx.setLineDash([]);
 
     // draw circumcircle
     let cc = t.circumcenter;
@@ -110,18 +98,15 @@ function render() {
 
     ctx.lineWidth = 1;
     if (isBad) {
-      // ctx.setLineDash([10, 10]);
       ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
       ctx.fill();
       ctx.strokeStyle = "red";
     } else {
-      // ctx.setLineDash([]);
       ctx.strokeStyle = "black";
     }
     ctx.stroke();
   });
 
-  // ctx.setLineDash([]);
   // draw polygon boundary edges
   if (polygon.length > 0) {
     ctx.strokeStyle = "lime";
