@@ -1,5 +1,7 @@
+// Local copies of the two Delaunay library files so we can hack them
 import bowyerWatson from "./bowyer-watson.js";
 import Triangle from "./triangle.js";
+
 import Vector from "vectory-lib";
 
 let canvas;
@@ -20,9 +22,9 @@ function getPoints() {
   //   new Vector(w*0.35, h*0.75)
   // ];
   let pointList = [
-    new Vector(w*0.3, h*0.25),
-    new Vector(w*0.25, h*0.5),
-    new Vector(w*0.4, h*0.65),
+    new Vector(w*0.35, h*0.6),
+    new Vector(w*0.2, h*0.77),
+    new Vector(w*0.4, h*0.85),
     new Vector(w*0.5, h*0.45),
     new Vector(w*0.65, h*0.6),
     new Vector(w*0.35, h*0.35),
@@ -48,11 +50,13 @@ function reset() {
 }
 
 function startVisualization() {
-  let margin = 50;
+  // Vertexes off screen to give us some room to draw the points to triangulate
+  // but a lot of the edges showing on screen
+  let margin = 30;
   let superTriangle = new Triangle(
-    new Vector(-margin * 4, h - margin),
-    new Vector(w + margin * 4, h - margin),
-    new Vector(w / 2, -margin*12)
+    new Vector(margin , h - margin),
+    new Vector(w - margin , h - margin),
+    new Vector(w / 2, margin)
   );
 
   let pointList = getPoints();
