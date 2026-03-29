@@ -8,21 +8,13 @@ let w, h;
 
 
 function getRandomPoints() {
-  let extra = 50;
+  let pointList = [];
 
-  let pointList = [
-    new Vector(-extra, -extra),
-    new Vector(-extra, h + extra),
-    new Vector(w + extra, -extra),
-    new Vector(w + extra, h + extra)
-  ];
-
-  let delimiter = Math.random() * 9000 + 1000;
-  let nrOfPoints = w * h / delimiter;
+  let nrOfPoints = 10;
   for(let i = 0; i < nrOfPoints; i++) {
     pointList.push(new Vector(
-      Math.random() * (w + extra * 2) - extra,
-      Math.random() * (h + extra * 2) - extra
+      Math.random() * w,
+      Math.random() * h
     ));
   }
   return pointList;
