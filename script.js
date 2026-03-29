@@ -22,12 +22,12 @@ function getPoints() {
   //   new Vector(w*0.35, h*0.75)
   // ];
   let pointList = [
-    new Vector(w*0.35, h*0.6),
-    new Vector(w*0.2, h*0.77),
+    new Vector(w*0.53, h*0.26),
+    new Vector(w*0.3, h*0.77),
     new Vector(w*0.4, h*0.85),
-    new Vector(w*0.5, h*0.45),
+    new Vector(w*0.4, h*0.45),
     new Vector(w*0.65, h*0.6),
-    new Vector(w*0.35, h*0.35),
+    new Vector(w*0.75, h*0.75),
     new Vector(w*0.6, h*0.3),
   ];
 
