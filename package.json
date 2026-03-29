@@ -1,0 +1,19 @@
+{
+  "name": "delaunay-debug",
+  "version": "1.0.0",
+  "description": "Illustrates the Delaunay triangulation algorithm Bowyer-Watson",
+  "license": "MIT",
+  "author": "Johan Karlsson (DonKarlssonSan)",
+  "type": "module",
+  "source": "index.html",
+  "scripts": {
+    "start": "parcel",
+    "build": "parcel build --public-url ./"
+  },
+  "dependencies": {
+    "vectory-lib": "^0.0.9"
+  },
+  "devDependencies": {
+    "parcel": "^2.16.4"
+  }
+}
