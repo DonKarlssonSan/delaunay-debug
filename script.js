@@ -85,10 +85,7 @@ function renderPlacingUI() {
     ctx.fill();
   });
 
-  // label
-  ctx.fillStyle = "#333";
-  ctx.font = "14px monospace";
-  ctx.fillText(`Place the points by clicking inside the triangle. (${placedPoints.length}/${settings.nrOfPoints})`, 10, 20);
+  drawStep('placePoints');
 }
 
 function getPoints() {
@@ -242,20 +239,25 @@ function render() {
     ctx.fill();
   }
 
-  // draw step info
-  ctx.fillStyle = "#333";
-  ctx.font = "14px monospace";
-  let label = step === 'init' ? "Place the points by clicking inside the triangle."
-    : step === 'badTriangles' ? "Bad triangles (red) & polygon boundary (green) — click to advance"
-    : step === 'retriangulated' ? "Re-triangulated — click to advance"
-    : "Done! Click to restart";
-  ctx.fillText(label, 10, 20);
+  drawStep(step);
 
   if (step === 'done') {
     generator = null;
     canvas.removeEventListener("click", advance);
     canvas.addEventListener("click", restartOnClick);
   }
+}
+
+function drawStep(step) {
+  // draw step info
+  ctx.fillStyle = "#333";
+  ctx.font = "14px monospace";
+  let label = step === 'init' ? "Initial state — click to advance"
+    : step === 'placePoints' ? "Place the points by clicking inside the triangle."
+    : step === 'badTriangles' ? "Bad triangles (red) & polygon boundary (green) — click to advance"
+    : step === 'retriangulated' ? "Re-triangulated — click to advance"
+    : "Done! Click to restart";
+  ctx.fillText(label, 10, 20);
 }
 
 function restartOnClick() {
