@@ -19,6 +19,9 @@ gui
   .name("Number of Points")
   .step(1);
 gui
+  .add({ placePoints: placePoints }, 'placePoints')
+  .name("Place Points");
+gui
   .add({ reset: startVisualization }, 'reset')
   .name("Reset Visualization");
 
@@ -27,6 +30,66 @@ let ctx;
 let w, h;
 let generator = null;
 let currentState = null;
+let placedPoints = [];
+let placingMode = false;
+
+
+function placePoints() {
+  placedPoints = [];
+  placingMode = true;
+  generator = null;
+  currentState = null;
+
+  canvas.removeEventListener("click", advance);
+  canvas.removeEventListener("click", restartOnClick);
+  canvas.addEventListener("click", placePoint);
+
+  renderPlacingUI();
+}
+
+function placePoint(e) {
+  let rect = canvas.getBoundingClientRect();
+  let x = e.clientX - rect.left;
+  let y = e.clientY - rect.top;
+  placedPoints.push(new Vector(x, y));
+
+  if (placedPoints.length >= settings.nrOfPoints) {
+    placingMode = false;
+    canvas.removeEventListener("click", placePoint);
+    canvas.addEventListener("click", advance);
+    startVisualizationWithPoints(placedPoints);
+  } else {
+    renderPlacingUI();
+  }
+}
+
+function renderPlacingUI() {
+  ctx.clearRect(0, 0, w, h);
+
+  // draw the super triangle outline
+  let margin = 30;
+  ctx.beginPath();
+  ctx.moveTo(margin, h - margin);
+  ctx.lineTo(w - margin, h - margin);
+  ctx.lineTo(w / 2, margin);
+  ctx.closePath();
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // draw already placed points
+  placedPoints.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+    ctx.fillStyle = "#333";
+    ctx.fill();
+  });
+
+  // label
+  ctx.fillStyle = "#333";
+  ctx.font = "14px monospace";
+  ctx.fillText(`Place the points by clicking inside the triangle. (${placedPoints.length}/${settings.nrOfPoints})`, 10, 20);
+}
 
 function getPoints() {
   let pointList = [
@@ -70,6 +133,21 @@ function startVisualization() {
   generator = bowyerWatson(superTriangle, pointList);
 
   // show the initial state
+  let result = generator.next();
+  currentState = result.value;
+  render();
+}
+
+function startVisualizationWithPoints(points) {
+  let margin = 30;
+  let superTriangle = new Triangle(
+    new Vector(margin, h - margin),
+    new Vector(w - margin, h - margin),
+    new Vector(w / 2, margin)
+  );
+
+  generator = bowyerWatson(superTriangle, points);
+
   let result = generator.next();
   currentState = result.value;
   render();
@@ -167,7 +245,7 @@ function render() {
   // draw step info
   ctx.fillStyle = "#333";
   ctx.font = "14px monospace";
-  let label = step === 'init' ? "Initial state — click to advance"
+  let label = step === 'init' ? "Place the points by clicking inside the triangle."
     : step === 'badTriangles' ? "Bad triangles (red) & polygon boundary (green) — click to advance"
     : step === 'retriangulated' ? "Re-triangulated — click to advance"
     : "Done! Click to restart";
