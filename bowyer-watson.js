@@ -1,6 +1,6 @@
 import Triangle from './triangle.js';
 
-export default function bowyerWatson (superTriangle, pointList) {
+export default function* bowyerWatson (superTriangle, pointList) {
   // pointList is a set of coordinates defining the
   // points to be triangulated
   let triangulation = [];
@@ -10,8 +10,20 @@ export default function bowyerWatson (superTriangle, pointList) {
   // the points in pointList
   triangulation.push(superTriangle);
 
+  yield {
+    step: 'init',
+    triangulation: [...triangulation],
+    pointList: [...pointList],
+    point: null,
+    badTriangles: [],
+    polygon: [],
+    processedPoints: []
+  };
+
+  let processedPoints = [];
+
   // add all the points one at a time to the triangulation
-  pointList.forEach(point => {
+  for (const point of pointList) {
     let badTriangles = [];
 
     // first find all the triangles that are no
@@ -37,6 +49,17 @@ export default function bowyerWatson (superTriangle, pointList) {
       });
     });
 
+    // pause: show bad triangles and polygon before modifying
+    yield {
+      step: 'badTriangles',
+      triangulation: [...triangulation],
+      pointList: [...pointList],
+      point,
+      badTriangles: [...badTriangles],
+      polygon: [...polygon],
+      processedPoints: [...processedPoints]
+    };
+
     // remove them from the data structure
     badTriangles.forEach(triangle => {
       let index = triangulation.indexOf(triangle);
@@ -51,7 +74,20 @@ export default function bowyerWatson (superTriangle, pointList) {
       let newTri = new Triangle(edge[0], edge[1], point);
       triangulation.push(newTri);
     });
-  });
+
+    processedPoints.push(point);
+
+    // pause: show result after re-triangulation
+    yield {
+      step: 'retriangulated',
+      triangulation: [...triangulation],
+      pointList: [...pointList],
+      point,
+      badTriangles: [],
+      polygon: [],
+      processedPoints: [...processedPoints]
+    };
+  }
 
   // done inserting points, now clean up
   let i = triangulation.length;
@@ -66,5 +102,13 @@ export default function bowyerWatson (superTriangle, pointList) {
     }
   }
 
-  return triangulation;
+  yield {
+    step: 'done',
+    triangulation: [...triangulation],
+    pointList: [...pointList],
+    point: null,
+    badTriangles: [],
+    polygon: [],
+    processedPoints: [...processedPoints]
+  };
 }
