@@ -1,8 +1,26 @@
+import * as dat from 'dat.gui';
+
 // Local copies of the two Delaunay library files so we can hack them
 import bowyerWatson from "./bowyer-watson.js";
 import Triangle from "./triangle.js";
 
 import Vector from "vectory-lib";
+
+class Settings {
+  constructor(nrOfPoints) {
+    this.nrOfPoints = nrOfPoints;
+  }
+}
+
+const settings = new Settings(7);
+const gui = new dat.GUI();
+gui
+  .add(settings, 'nrOfPoints', 1, 20)
+  .name("Number of Points")
+  .step(1);
+gui
+  .add({ reset: startVisualization }, 'reset')
+  .name("Reset Visualization");
 
 let canvas;
 let ctx;
