@@ -8,3 +8,17 @@ You can also decide your self where the points should be placed and how many, us
 
 ## Important Note
 I'm using local copies of the files provided by my library [Delaunay.js](https://github.com/DonKarlssonSan/Delaunay.js) to be able to hack them as needed. If you are looking for an implementation that you can use in your own project, use that library instead. The algorithm used here is tweaked heavily for visualization purposes.
+
+# Run locally
+Install the dependencies:
+```
+npm install
+```
+
+This will use parcel to run a local dev server:
+
+```
+npm start
+```
+
+Look at the terminal output for the URL, normally http://localhost:1234.
